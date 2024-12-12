@@ -12,6 +12,7 @@ import time
 ratio_upper = 1.0001
 ratio_lower = 0.9999
 test_start_money = 1000.0
+fee_rate = 0.999 # 交易费率0.1%就是0.999
 
 
 """ crypto pair candidates """
@@ -602,14 +603,14 @@ def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
         volume_2 = a_b["ask_sz"] * a_b["ask"] * b_u["ask"]
         sell_stx_to_usdt_price = a_u["bid"]
         volume_3 = a_u["bid_sz"] * a_u["bid"]
-        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * 0.9995 * 0.9995 * 0.9995
+        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * pow(fee_rate, 3)
         if new_money > test_start_money:
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {a_name} cheap. buy {b_name} on {buy_btc_use_ustd_price}, exchange {b_name} to {a_name} at {buy_stx_use_btc_price}, then sell {a_name} for usdt at {sell_stx_to_usdt_price}\n" + \
             f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
-            with open("record_9995.txt", "a") as f:
+            with open(f"record_{fee_rate}_{get_timestamp()}", "a") as f:
                 f.write(record_str)
     else:
         # btc便宜，买stx换btc
@@ -619,14 +620,14 @@ def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
         volume_2 = a_b["bid_sz"] * a_b["bid"] * b_u["ask"]
         sell_btc_to_usdt_price = b_u["bid"]
         volume_3 = b_u["bid_sz"] * b_u["bid"]
-        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price * 0.9995 * 0.9995 * 0.9995
+        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price * pow(fee_rate, 3)
         if new_money > test_start_money:
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {b_name} cheap. buy {a_name} on {buy_stx_use_usdt_price}, exchange {a_name} to {b_name} at {sell_stx_to_btc_price}, then sell {b_name} for usdt at {sell_btc_to_usdt_price}\n" + \
             f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
-            with open("record_9995", "a") as f:
+            with open(f"record_{fee_rate}_{get_timestamp()}", "a") as f:
                 f.write(record_str)
 
 
