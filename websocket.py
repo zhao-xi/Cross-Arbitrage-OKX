@@ -627,7 +627,7 @@ def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {b_name} cheap. buy {a_name} on {buy_stx_use_usdt_price}, exchange {a_name} to {b_name} at {sell_stx_to_btc_price}, then sell {b_name} for usdt at {sell_btc_to_usdt_price}\n" + \
-            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n}"
+            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
             with open("record_100_with_vol.txt", "a") as f:
                 f.write(record_str)
