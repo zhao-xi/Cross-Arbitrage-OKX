@@ -581,7 +581,7 @@ def check_prices():
         ratio = (sol_usdt["price"] / eth_usdt["price"]) / sol_eth["price"]
         if ratio > ratio_upper or ratio < ratio_lower:
             # print(f'{date_str} sol-eth {ratio}')
-            determine_trade(sol_usdt, eth_usdt, sol_eth, ratio, "okb", "btc")
+            determine_trade(sol_usdt, eth_usdt, sol_eth, ratio, "okb", "eth")
             pass
 
 
@@ -598,30 +598,38 @@ def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
     if ratio > ratio_upper:
         # stx便宜，买btc换stx
         buy_btc_use_ustd_price = b_u["ask"]
+        volume_1 = b_u["ask_sz"] * b_u["ask"]
         buy_stx_use_btc_price = a_b["ask"]
+        volume_2 = a_b["ask_sz"] * a_b["ask"]
         sell_stx_to_usdt_price = a_u["bid"]
-        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * 0.999 * 0.999 * 0.999
+        volume_3 = a_u["bid_sz"] * a_u["bid"]
+        # new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * 0.9995 * 0.9995 * 0.9995
+        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price
         if new_money > test_start_money: # todo 暂时不考虑买卖size
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {a_name} cheap. buy {b_name} on {buy_btc_use_ustd_price}, exchange {b_name} to {a_name} at {buy_stx_use_btc_price}, then sell {a_name} for usdt at {sell_stx_to_usdt_price}\n" + \
-            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}\n======\n\n"
+            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
-            with open("record.txt", "a") as f:
+            with open("record_100_with_vol.txt", "a") as f:
                 f.write(record_str)
     else:
         # btc便宜，买stx换btc
         buy_stx_use_usdt_price = a_u["ask"]
+        volume_1 = a_u["ask_sz"] * a_u["ask"]
         sell_stx_to_btc_price = a_b["bid"]
+        volume_2 = a_b["bid_sz"] * a_b["bid"]
         sell_btc_to_usdt_price = b_u["bid"]
-        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price * 0.999 * 0.999 * 0.999
+        volume_3 = b_u["bid_sz"] * b_u["bid"]
+        # new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price
+        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price
         if new_money > test_start_money: # todo 暂时不考虑买卖size
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {b_name} cheap. buy {a_name} on {buy_stx_use_usdt_price}, exchange {a_name} to {b_name} at {sell_stx_to_btc_price}, then sell {b_name} for usdt at {sell_btc_to_usdt_price}\n" + \
-            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}\n======\n\n"
+            f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n}"
             print(record_str)
-            with open("record.txt", "a") as f:
+            with open("record_100_with_vol.txt", "a") as f:
                 f.write(record_str)
 
 
