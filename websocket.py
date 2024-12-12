@@ -332,13 +332,12 @@ def check(bids, asks):
 
 
 # subscribe channels un_need login
-async def do_subscribe(url_public, channels_public, url_trade):
+async def do_subscribe(url_public, channels_public):
     global btc_usdt,eth_usdt,sol_usdt,dai_usdt,okb_usdt,bch_usdt,bsv_usdt,ltc_usdt,stx_usdt,eth_btc,sol_btc,dai_btc,okb_btc,bch_btc,bsv_btc,ltc_btc,stx_btc,dai_eth,sol_eth
     l = []
     while True:
         try:
-            async with websockets.connect(url_public) as ws, websockets.connect(url_trade) as trade_ws:
-                # todo trade channel登录
+            async with websockets.connect(url_public) as ws:
                 sub_param = {"op": "subscribe", "args": channels_public}
                 sub_str = json.dumps(sub_param)
                 await ws.send(sub_str)
@@ -498,7 +497,6 @@ async def do_subscribe(url_public, channels_public, url_trade):
                             sol_eth["bid_sz"] = bid_sz
                             sol_eth["ask_sz"] = ask_sz
                             sol_eth["timestamp"] = timestamp
-                        check_prices()
                     except Exception as e:
                         print(e) # 刚开始时会打一堆 keyError: 'data'，这是某种意义上的启动信息，不要在意
                         pass
@@ -512,87 +510,88 @@ async def do_subscribe(url_public, channels_public, url_trade):
 
 def check_prices():
     global test_start_money
+    while True:
     # eth-btc-usdt
-    if eth_usdt["price"] != 0 and btc_usdt["price"] != 0 and eth_btc["price"] != 0:
-        ratio = (eth_usdt["price"] / btc_usdt["price"]) / eth_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} eth-btc {ratio}')
-            determine_trade(eth_usdt, btc_usdt, eth_btc, ratio, "eth", "btc")
-            pass
-    # sol-btc-usdt
-    if sol_usdt["price"] != 0 and btc_usdt["price"] != 0 and sol_btc["price"] != 0:
-        ratio = (sol_usdt["price"] / btc_usdt["price"]) / sol_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} sol-btc {ratio}')
-            determine_trade(sol_usdt, btc_usdt, sol_btc, ratio, "bsv", "btc")
-            pass
-    # dai-btc-usdt
-    if dai_usdt["price"] != 0 and btc_usdt["price"] != 0 and dai_btc["price"] != 0:
-        ratio = (dai_usdt["price"] / btc_usdt["price"]) / dai_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} dai-btc {ratio}')
-            determine_trade(dai_usdt, btc_usdt, dai_btc, ratio, "dai", "btc")
-            pass
-    # okb-btc-usdt
-    if okb_usdt["price"]!= 0 and btc_usdt["price"] != 0 and okb_btc["price"] != 0:
-        ratio = (okb_usdt["price"] / btc_usdt["price"]) / okb_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} okb-btc {ratio}')
-            determine_trade(okb_usdt, btc_usdt, okb_btc, ratio, "okb", "btc")
-            pass
-    # bch-btc-usdt
-    if bch_usdt["price"] != 0 and btc_usdt["price"] != 0 and bch_btc["price"] != 0:
-        ratio = (bch_usdt["price"] / btc_usdt["price"]) / bch_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} bch-btc {ratio}')
-            determine_trade(bch_usdt, btc_usdt, bch_btc, ratio, "bch", "btc")
-            pass
-    # bsv-btc-usdt
-    if bsv_usdt["price"] != 0 and btc_usdt["price"] != 0 and bsv_btc["price"] != 0:
-        ratio = (bsv_usdt["price"] / btc_usdt["price"]) / bsv_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} bsv-btc {ratio}')
-            determine_trade(bsv_usdt, btc_usdt, bsv_btc, ratio, "bsv", "btc")
-            pass
-    # ltc-btc-usdt
-    if ltc_usdt["price"] != 0 and btc_usdt["price"] != 0 and ltc_btc["price"] != 0:
-        ratio = (ltc_usdt["price"] / btc_usdt["price"]) / ltc_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} ltc-btc {ratio}')
-            determine_trade(ltc_usdt, btc_usdt, ltc_btc, ratio, "ltc", "btc")
-            pass
-    # stx-btc-usdt
-    if stx_usdt["price"] != 0 and btc_usdt["price"] != 0 and stx_btc["price"] != 0:
-        ratio = (stx_usdt["price"] / btc_usdt["price"]) / stx_btc["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} stx-btc {ratio}')
-            determine_trade(stx_usdt, btc_usdt, stx_btc, ratio, "stx", "btc")
-            pass
+        if eth_usdt["price"] != 0 and btc_usdt["price"] != 0 and eth_btc["price"] != 0:
+            ratio = (eth_usdt["price"] / btc_usdt["price"]) / eth_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} eth-btc {ratio}')
+                determine_trade(eth_usdt, btc_usdt, eth_btc, ratio, "eth", "btc")
+                pass
+        # sol-btc-usdt
+        if sol_usdt["price"] != 0 and btc_usdt["price"] != 0 and sol_btc["price"] != 0:
+            ratio = (sol_usdt["price"] / btc_usdt["price"]) / sol_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} sol-btc {ratio}')
+                determine_trade(sol_usdt, btc_usdt, sol_btc, ratio, "bsv", "btc")
+                pass
+        # dai-btc-usdt
+        if dai_usdt["price"] != 0 and btc_usdt["price"] != 0 and dai_btc["price"] != 0:
+            ratio = (dai_usdt["price"] / btc_usdt["price"]) / dai_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} dai-btc {ratio}')
+                determine_trade(dai_usdt, btc_usdt, dai_btc, ratio, "dai", "btc")
+                pass
+        # okb-btc-usdt
+        if okb_usdt["price"]!= 0 and btc_usdt["price"] != 0 and okb_btc["price"] != 0:
+            ratio = (okb_usdt["price"] / btc_usdt["price"]) / okb_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} okb-btc {ratio}')
+                determine_trade(okb_usdt, btc_usdt, okb_btc, ratio, "okb", "btc")
+                pass
+        # bch-btc-usdt
+        if bch_usdt["price"] != 0 and btc_usdt["price"] != 0 and bch_btc["price"] != 0:
+            ratio = (bch_usdt["price"] / btc_usdt["price"]) / bch_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} bch-btc {ratio}')
+                determine_trade(bch_usdt, btc_usdt, bch_btc, ratio, "bch", "btc")
+                pass
+        # bsv-btc-usdt
+        if bsv_usdt["price"] != 0 and btc_usdt["price"] != 0 and bsv_btc["price"] != 0:
+            ratio = (bsv_usdt["price"] / btc_usdt["price"]) / bsv_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} bsv-btc {ratio}')
+                determine_trade(bsv_usdt, btc_usdt, bsv_btc, ratio, "bsv", "btc")
+                pass
+        # ltc-btc-usdt
+        if ltc_usdt["price"] != 0 and btc_usdt["price"] != 0 and ltc_btc["price"] != 0:
+            ratio = (ltc_usdt["price"] / btc_usdt["price"]) / ltc_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} ltc-btc {ratio}')
+                determine_trade(ltc_usdt, btc_usdt, ltc_btc, ratio, "ltc", "btc")
+                pass
+        # stx-btc-usdt
+        if stx_usdt["price"] != 0 and btc_usdt["price"] != 0 and stx_btc["price"] != 0:
+            ratio = (stx_usdt["price"] / btc_usdt["price"]) / stx_btc["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} stx-btc {ratio}')
+                determine_trade(stx_usdt, btc_usdt, stx_btc, ratio, "stx", "btc")
+                pass
 
-    # dat-eth-usdt
-    if dai_usdt["price"] != 0 and eth_usdt["price"] != 0 and dai_eth["price"] != 0:
-        ratio = (dai_usdt["price"] / eth_usdt["price"]) / dai_eth["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} dai-eth {ratio}')
-            determine_trade(dai_usdt, eth_usdt, dai_eth, ratio, "dai", "eth")
-            pass
-    # sol-eth-usdt
-    if sol_usdt["price"] != 0 and eth_usdt["price"] != 0 and sol_eth["price"] != 0:
-        ratio = (sol_usdt["price"] / eth_usdt["price"]) / sol_eth["price"]
-        if ratio > ratio_upper or ratio < ratio_lower:
-            # print(f'{date_str} sol-eth {ratio}')
-            determine_trade(sol_usdt, eth_usdt, sol_eth, ratio, "okb", "eth")
-            pass
+        # dat-eth-usdt
+        if dai_usdt["price"] != 0 and eth_usdt["price"] != 0 and dai_eth["price"] != 0:
+            ratio = (dai_usdt["price"] / eth_usdt["price"]) / dai_eth["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} dai-eth {ratio}')
+                determine_trade(dai_usdt, eth_usdt, dai_eth, ratio, "dai", "eth")
+                pass
+        # sol-eth-usdt
+        if sol_usdt["price"] != 0 and eth_usdt["price"] != 0 and sol_eth["price"] != 0:
+            ratio = (sol_usdt["price"] / eth_usdt["price"]) / sol_eth["price"]
+            if ratio > ratio_upper or ratio < ratio_lower:
+                # print(f'{date_str} sol-eth {ratio}')
+                determine_trade(sol_usdt, eth_usdt, sol_eth, ratio, "okb", "eth")
+                pass
 
 
 def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
     global test_start_money
-    # if a_u["last_check"] == a_u["timestamp"] or a_b["last_check"] == a_b["timestamp"] or b_u["last_check"] == b_u["timestamp"]:
-    #     # 如果你任何时候在determine_trade中操作了交易，那么这三个币对的last_check应该都更新了。避免用旧数据交易
-    #     return
-    # a_u["last_check"] = a_u["timestamp"]
-    # b_u["last_check"] = b_u["timestamp"]
-    # a_b["last_check"] = a_b["timestamp"]
+    if a_u["last_check"] == a_u["timestamp"] and a_b["last_check"] == a_b["timestamp"] and b_u["last_check"] == b_u["timestamp"]:
+        # 如果你任何时候在determine_trade中操作了交易，那么这三个币对的last_check应该都更新了。避免用旧数据交易
+        return
+    a_u["last_check"] = a_u["timestamp"]
+    b_u["last_check"] = b_u["timestamp"]
+    a_b["last_check"] = a_b["timestamp"]
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if ratio > ratio_upper:
@@ -600,36 +599,34 @@ def determine_trade(a_u, b_u, a_b, ratio, a_name, b_name):
         buy_btc_use_ustd_price = b_u["ask"]
         volume_1 = b_u["ask_sz"] * b_u["ask"]
         buy_stx_use_btc_price = a_b["ask"]
-        volume_2 = a_b["ask_sz"] * a_b["ask"]
+        volume_2 = a_b["ask_sz"] * a_b["ask"] * b_u["ask"]
         sell_stx_to_usdt_price = a_u["bid"]
         volume_3 = a_u["bid_sz"] * a_u["bid"]
-        # new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * 0.9995 * 0.9995 * 0.9995
-        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price
-        if new_money > test_start_money: # todo 暂时不考虑买卖size
+        new_money = test_start_money / buy_btc_use_ustd_price / buy_stx_use_btc_price * sell_stx_to_usdt_price * 0.9995 * 0.9995 * 0.9995
+        if new_money > test_start_money:
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {a_name} cheap. buy {b_name} on {buy_btc_use_ustd_price}, exchange {b_name} to {a_name} at {buy_stx_use_btc_price}, then sell {a_name} for usdt at {sell_stx_to_usdt_price}\n" + \
             f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
-            with open("record_100_with_vol.txt", "a") as f:
+            with open("record_9995.txt", "a") as f:
                 f.write(record_str)
     else:
         # btc便宜，买stx换btc
         buy_stx_use_usdt_price = a_u["ask"]
         volume_1 = a_u["ask_sz"] * a_u["ask"]
         sell_stx_to_btc_price = a_b["bid"]
-        volume_2 = a_b["bid_sz"] * a_b["bid"]
+        volume_2 = a_b["bid_sz"] * a_b["bid"] * b_u["ask"]
         sell_btc_to_usdt_price = b_u["bid"]
         volume_3 = b_u["bid_sz"] * b_u["bid"]
-        # new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price
-        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price
-        if new_money > test_start_money: # todo 暂时不考虑买卖size
+        new_money = test_start_money / buy_stx_use_usdt_price * sell_stx_to_btc_price * sell_btc_to_usdt_price * 0.9995 * 0.9995 * 0.9995
+        if new_money > test_start_money:
             # todo 接入交易api
             record_str = f"\n======\n{date_str} {b_name}_usdt: {b_u}, {a_name}_{b_name}: {a_b}, {a_name}_usdt: {a_u}\n" + \
             f"{date_str} {b_name} cheap. buy {a_name} on {buy_stx_use_usdt_price}, exchange {a_name} to {b_name} at {sell_stx_to_btc_price}, then sell {b_name} for usdt at {sell_btc_to_usdt_price}\n" + \
             f"{date_str} this trade profit ratio: {'%.6f' % (new_money / test_start_money)}, trade size: {min(volume_1, volume_2, volume_3)}\n======\n\n"
             print(record_str)
-            with open("record_100_with_vol.txt", "a") as f:
+            with open("record_9995", "a") as f:
                 f.write(record_str)
 
 
@@ -709,6 +706,8 @@ async def unsubscribe_without_login(url, channels):
 api_key = ""
 secret_key = ""
 passphrase = ""
+
+
 
 if __name__ == '__main__':
     # WebSocket公共频道 public channels
@@ -830,11 +829,15 @@ if __name__ == '__main__':
     #         {"instId": "BTC-USDT", "ordId": "259435442496483328", "newSz": "3"}
     #     ]}
 
-
+    import threading
     loop = asyncio.get_event_loop()
 
     # 公共频道 不需要登录（行情，持仓总量，K线，标记价格，深度，资金费率等）
-    loop.run_until_complete(do_subscribe(url, channels, url_private))
+    threading.Thread(target=loop.run_until_complete, args=(do_subscribe(url, channels), )).start()
+    # loop.run_until_complete(do_subscribe(url, channels))
+    threading.Thread(target=check_prices).start()
+    while True:
+        time.sleep(1)
 
     # 私有频道 需要登录（账户，持仓，订单等）
     # loop.run_until_complete(subscribe(url, api_key, passphrase, secret_key, channels))
